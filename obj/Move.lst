@@ -1,0 +1,483 @@
+                              1 ;--------------------------------------------------------
+                              2 ; File Created by SDCC : free open source ANSI-C Compiler
+                              3 ; Version 3.6.0 #9615 (Linux)
+                              4 ;--------------------------------------------------------
+                              5 	.module Move
+                              6 	.optsdcc -mgbz80
+                              7 	
+                              8 ;--------------------------------------------------------
+                              9 ; Public variables in this module
+                             10 ;--------------------------------------------------------
+                             11 	.globl _main
+                             12 	.globl _move_sprite
+                             13 	.globl _set_sprite_tile
+                             14 	.globl _set_sprite_data
+                             15 	.globl _joypad
+                             16 	.globl _delay
+                             17 	.globl _rxpos
+                             18 	.globl _lxpos
+                             19 	.globl _lypos
+                             20 	.globl _face
+                             21 ;--------------------------------------------------------
+                             22 ; ram data
+                             23 ;--------------------------------------------------------
+                             24 	.area _DATA
+   0000                      25 _face::
+   0000                      26 	.ds 64
+   0040                      27 _lypos::
+   0040                      28 	.ds 2
+   0042                      29 _lxpos::
+   0042                      30 	.ds 2
+   0044                      31 _rxpos::
+   0044                      32 	.ds 2
+                             33 ;--------------------------------------------------------
+                             34 ; absolute external ram data
+                             35 ;--------------------------------------------------------
+                             36 	.area _DABS (ABS)
+                             37 ;--------------------------------------------------------
+                             38 ; global & static initialisations
+                             39 ;--------------------------------------------------------
+                             40 	.area _HOME
+                             41 	.area _GSINIT
+                             42 	.area _GSFINAL
+                             43 	.area _GSINIT
+                             44 ;face.c:26: unsigned char face[] =
+   0000 21r00r00             45 	ld	hl,#_face
+   0003 36 7F                46 	ld	(hl),#0x7f
+   0005 21r01r00             47 	ld	hl,#(_face + 0x0001)
+   0008 36 7F                48 	ld	(hl),#0x7f
+   000A 21r02r00             49 	ld	hl,#(_face + 0x0002)
+   000D 36 80                50 	ld	(hl),#0x80
+   000F 21r03r00             51 	ld	hl,#(_face + 0x0003)
+   0012 36 80                52 	ld	(hl),#0x80
+   0014 21r04r00             53 	ld	hl,#(_face + 0x0004)
+   0017 36 80                54 	ld	(hl),#0x80
+   0019 21r05r00             55 	ld	hl,#(_face + 0x0005)
+   001C 36 80                56 	ld	(hl),#0x80
+   001E 21r06r00             57 	ld	hl,#(_face + 0x0006)
+   0021 36 98                58 	ld	(hl),#0x98
+   0023 21r07r00             59 	ld	hl,#(_face + 0x0007)
+   0026 36 98                60 	ld	(hl),#0x98
+   0028 21r08r00             61 	ld	hl,#(_face + 0x0008)
+   002B 36 98                62 	ld	(hl),#0x98
+   002D 21r09r00             63 	ld	hl,#(_face + 0x0009)
+   0030 36 98                64 	ld	(hl),#0x98
+   0032 21r0Ar00             65 	ld	hl,#(_face + 0x000a)
+   0035 36 98                66 	ld	(hl),#0x98
+   0037 21r0Br00             67 	ld	hl,#(_face + 0x000b)
+   003A 36 98                68 	ld	(hl),#0x98
+   003C 21r0Cr00             69 	ld	hl,#(_face + 0x000c)
+   003F 36 98                70 	ld	(hl),#0x98
+   0041 21r0Dr00             71 	ld	hl,#(_face + 0x000d)
+   0044 36 98                72 	ld	(hl),#0x98
+   0046 21r0Er00             73 	ld	hl,#(_face + 0x000e)
+   0049 36 98                74 	ld	(hl),#0x98
+   004B 21r0Fr00             75 	ld	hl,#(_face + 0x000f)
+   004E 36 98                76 	ld	(hl),#0x98
+   0050 21r10r00             77 	ld	hl,#(_face + 0x0010)
+   0053 36 80                78 	ld	(hl),#0x80
+   0055 21r11r00             79 	ld	hl,#(_face + 0x0011)
+   0058 36 80                80 	ld	(hl),#0x80
+   005A 21r12r00             81 	ld	hl,#(_face + 0x0012)
+   005D 36 80                82 	ld	(hl),#0x80
+   005F 21r13r00             83 	ld	hl,#(_face + 0x0013)
+   0062 36 80                84 	ld	(hl),#0x80
+   0064 21r14r00             85 	ld	hl,#(_face + 0x0014)
+   0067 36 80                86 	ld	(hl),#0x80
+   0069 21r15r00             87 	ld	hl,#(_face + 0x0015)
+   006C 36 80                88 	ld	(hl),#0x80
+   006E 21r16r00             89 	ld	hl,#(_face + 0x0016)
+   0071 36 9F                90 	ld	(hl),#0x9f
+   0073 21r17r00             91 	ld	hl,#(_face + 0x0017)
+   0076 36 9F                92 	ld	(hl),#0x9f
+   0078 21r18r00             93 	ld	hl,#(_face + 0x0018)
+   007B 36 9F                94 	ld	(hl),#0x9f
+   007D 21r19r00             95 	ld	hl,#(_face + 0x0019)
+   0080 36 9F                96 	ld	(hl),#0x9f
+   0082 21r1Ar00             97 	ld	hl,#(_face + 0x001a)
+   0085 36 80                98 	ld	(hl),#0x80
+   0087 21r1Br00             99 	ld	hl,#(_face + 0x001b)
+   008A 36 80               100 	ld	(hl),#0x80
+   008C 21r1Cr00            101 	ld	hl,#(_face + 0x001c)
+   008F 36 80               102 	ld	(hl),#0x80
+   0091 21r1Dr00            103 	ld	hl,#(_face + 0x001d)
+   0094 36 80               104 	ld	(hl),#0x80
+   0096 21r1Er00            105 	ld	hl,#(_face + 0x001e)
+   0099 36 7F               106 	ld	(hl),#0x7f
+   009B 21r1Fr00            107 	ld	hl,#(_face + 0x001f)
+   009E 36 7F               108 	ld	(hl),#0x7f
+   00A0 21r20r00            109 	ld	hl,#(_face + 0x0020)
+   00A3 36 FE               110 	ld	(hl),#0xfe
+   00A5 21r21r00            111 	ld	hl,#(_face + 0x0021)
+   00A8 36 FE               112 	ld	(hl),#0xfe
+   00AA 21r22r00            113 	ld	hl,#(_face + 0x0022)
+   00AD 36 01               114 	ld	(hl),#0x01
+   00AF 21r23r00            115 	ld	hl,#(_face + 0x0023)
+   00B2 36 01               116 	ld	(hl),#0x01
+   00B4 21r24r00            117 	ld	hl,#(_face + 0x0024)
+   00B7 36 01               118 	ld	(hl),#0x01
+   00B9 21r25r00            119 	ld	hl,#(_face + 0x0025)
+   00BC 36 01               120 	ld	(hl),#0x01
+   00BE 21r26r00            121 	ld	hl,#(_face + 0x0026)
+   00C1 36 19               122 	ld	(hl),#0x19
+   00C3 21r27r00            123 	ld	hl,#(_face + 0x0027)
+   00C6 36 19               124 	ld	(hl),#0x19
+   00C8 21r28r00            125 	ld	hl,#(_face + 0x0028)
+   00CB 36 19               126 	ld	(hl),#0x19
+   00CD 21r29r00            127 	ld	hl,#(_face + 0x0029)
+   00D0 36 19               128 	ld	(hl),#0x19
+   00D2 21r2Ar00            129 	ld	hl,#(_face + 0x002a)
+   00D5 36 19               130 	ld	(hl),#0x19
+   00D7 21r2Br00            131 	ld	hl,#(_face + 0x002b)
+   00DA 36 19               132 	ld	(hl),#0x19
+   00DC 21r2Cr00            133 	ld	hl,#(_face + 0x002c)
+   00DF 36 19               134 	ld	(hl),#0x19
+   00E1 21r2Dr00            135 	ld	hl,#(_face + 0x002d)
+   00E4 36 19               136 	ld	(hl),#0x19
+   00E6 21r2Er00            137 	ld	hl,#(_face + 0x002e)
+   00E9 36 19               138 	ld	(hl),#0x19
+   00EB 21r2Fr00            139 	ld	hl,#(_face + 0x002f)
+   00EE 36 19               140 	ld	(hl),#0x19
+   00F0 21r30r00            141 	ld	hl,#(_face + 0x0030)
+   00F3 36 01               142 	ld	(hl),#0x01
+   00F5 21r31r00            143 	ld	hl,#(_face + 0x0031)
+   00F8 36 01               144 	ld	(hl),#0x01
+   00FA 21r32r00            145 	ld	hl,#(_face + 0x0032)
+   00FD 36 01               146 	ld	(hl),#0x01
+   00FF 21r33r00            147 	ld	hl,#(_face + 0x0033)
+   0102 36 01               148 	ld	(hl),#0x01
+   0104 21r34r00            149 	ld	hl,#(_face + 0x0034)
+   0107 36 01               150 	ld	(hl),#0x01
+   0109 21r35r00            151 	ld	hl,#(_face + 0x0035)
+   010C 36 01               152 	ld	(hl),#0x01
+   010E 21r36r00            153 	ld	hl,#(_face + 0x0036)
+   0111 36 F9               154 	ld	(hl),#0xf9
+   0113 21r37r00            155 	ld	hl,#(_face + 0x0037)
+   0116 36 F9               156 	ld	(hl),#0xf9
+   0118 21r38r00            157 	ld	hl,#(_face + 0x0038)
+   011B 36 F9               158 	ld	(hl),#0xf9
+   011D 21r39r00            159 	ld	hl,#(_face + 0x0039)
+   0120 36 F9               160 	ld	(hl),#0xf9
+   0122 21r3Ar00            161 	ld	hl,#(_face + 0x003a)
+   0125 36 01               162 	ld	(hl),#0x01
+   0127 21r3Br00            163 	ld	hl,#(_face + 0x003b)
+   012A 36 01               164 	ld	(hl),#0x01
+   012C 21r3Cr00            165 	ld	hl,#(_face + 0x003c)
+   012F 36 01               166 	ld	(hl),#0x01
+   0131 21r3Dr00            167 	ld	hl,#(_face + 0x003d)
+   0134 36 01               168 	ld	(hl),#0x01
+   0136 21r3Er00            169 	ld	hl,#(_face + 0x003e)
+   0139 36 FE               170 	ld	(hl),#0xfe
+   013B 21r3Fr00            171 	ld	hl,#(_face + 0x003f)
+   013E 36 FE               172 	ld	(hl),#0xfe
+                            173 ;Move.c:11: int lypos = 75 ;
+   0140 21r40r00            174 	ld	hl,#_lypos
+   0143 36 4B               175 	ld	(hl),#0x4b
+   0145 23                  176 	inc	hl
+   0146 36 00               177 	ld	(hl),#0x00
+                            178 ;Move.c:12: int lxpos = 75;
+   0148 21r42r00            179 	ld	hl,#_lxpos
+   014B 36 4B               180 	ld	(hl),#0x4b
+   014D 23                  181 	inc	hl
+   014E 36 00               182 	ld	(hl),#0x00
+                            183 ;Move.c:13: int rxpos = 82;
+   0150 21r44r00            184 	ld	hl,#_rxpos
+   0153 36 52               185 	ld	(hl),#0x52
+   0155 23                  186 	inc	hl
+   0156 36 00               187 	ld	(hl),#0x00
+                            188 ;--------------------------------------------------------
+                            189 ; Home
+                            190 ;--------------------------------------------------------
+                            191 	.area _HOME
+                            192 	.area _HOME
+                            193 ;--------------------------------------------------------
+                            194 ; code
+                            195 ;--------------------------------------------------------
+                            196 	.area _CODE
+                            197 ;Move.c:16: void main(){
+                            198 ;	---------------------------------
+                            199 ; Function main
+                            200 ; ---------------------------------
+   0000                     201 _main::
+                            202 ;Move.c:18: SPRITES_8x16;  // Load 8x8 sprites two at a time (left half of face):
+   0000 11 40 FF            203 	ld	de,#0xff40
+   0003 1A                  204 	ld	a,(de)
+   0004 4F                  205 	ld	c,a
+   0005 06 00               206 	ld	b,#0x00
+   0007 79                  207 	ld	a,c
+   0008 CB D7               208 	set	2, a
+   000A 4F                  209 	ld	c,a
+   000B 21 40 FF            210 	ld	hl,#0xff40
+   000E 71                  211 	ld	(hl),c
+                            212 ;Move.c:19: set_sprite_data(0,4,face); // Push 4 8x8 sprites from face array into our sprite array.
+   000F 21r00r00            213 	ld	hl,#_face
+   0012 E5                  214 	push	hl
+   0013 21 00 04            215 	ld	hl,#0x0400
+   0016 E5                  216 	push	hl
+   0017 CDr00r00            217 	call	_set_sprite_data
+   001A E8 04               218 	add	sp, #4
+                            219 ;Move.c:20: set_sprite_tile(0,0); // Set the left half in the first position.
+   001C 21 00 00            220 	ld	hl,#0x0000
+   001F E5                  221 	push	hl
+   0020 CDr00r00            222 	call	_set_sprite_tile
+   0023 E8 02               223 	add	sp, #2
+                            224 ;Move.c:21: move_sprite(0,75,75); // Set screen position of the left half.
+   0025 21 4B 4B            225 	ld	hl,#0x4b4b
+   0028 E5                  226 	push	hl
+   0029 AF                  227 	xor	a, a
+   002A F5                  228 	push	af
+   002B 33                  229 	inc	sp
+   002C CDr00r00            230 	call	_move_sprite
+   002F E8 03               231 	add	sp, #3
+                            232 ;Move.c:22: set_sprite_tile(1, 2); // Set second right half in the secon position.
+   0031 21 01 02            233 	ld	hl,#0x0201
+   0034 E5                  234 	push	hl
+   0035 CDr00r00            235 	call	_set_sprite_tile
+   0038 E8 02               236 	add	sp, #2
+                            237 ;Move.c:23: move_sprite(1, 75 + 8, 75); // Set screen position of the right half.
+   003A 21 53 4B            238 	ld	hl,#0x4b53
+   003D E5                  239 	push	hl
+   003E 3E 01               240 	ld	a,#0x01
+   0040 F5                  241 	push	af
+   0041 33                  242 	inc	sp
+   0042 CDr00r00            243 	call	_move_sprite
+   0045 E8 03               244 	add	sp, #3
+                            245 ;Move.c:24: SHOW_SPRITES; // Display Sprites.
+   0047 11 40 FF            246 	ld	de,#0xff40
+   004A 1A                  247 	ld	a,(de)
+   004B 4F                  248 	ld	c,a
+   004C 06 00               249 	ld	b,#0x00
+   004E 79                  250 	ld	a,c
+   004F CB CF               251 	set	1, a
+   0051 4F                  252 	ld	c,a
+   0052 21 40 FF            253 	ld	hl,#0xff40
+   0055 71                  254 	ld	(hl),c
+                            255 ;Move.c:27: while(1){
+   0056                     256 00108$:
+                            257 ;Move.c:29: switch (joypad()) {
+   0056 CDr00r00            258 	call	_joypad
+                            259 ;Move.c:46: move_sprite(0,lxpos - 8,lypos); // Change left half position.
+   0059 21r40r00            260 	ld	hl,#_lypos
+   005C 46                  261 	ld	b,(hl)
+   005D 21r42r00            262 	ld	hl,#_lxpos
+   0060 4E                  263 	ld	c,(hl)
+                            264 ;Move.c:29: switch (joypad()) {
+   0061 7B                  265 	ld	a,e
+   0062 3D                  266 	dec	a
+   0063 CAr45r01            267 	jp	Z,00104$
+   0066 7B                  268 	ld	a,e
+   0067 D6 02               269 	sub	a, #0x02
+   0069 CArFDr00            270 	jp	Z,00103$
+                            271 ;Move.c:32: move_sprite(0,lxpos,lypos - 8); // Change left half position.
+   006C 21r40r00            272 	ld	hl,#_lypos
+   006F 4E                  273 	ld	c,(hl)
+   0070 21r42r00            274 	ld	hl,#_lxpos
+   0073 46                  275 	ld	b,(hl)
+                            276 ;Move.c:29: switch (joypad()) {
+   0074 7B                  277 	ld	a,e
+   0075 FE 04               278 	cp	a,#0x04
+   0077 28 07               279 	jr	Z,00101$
+   0079 D6 08               280 	sub	a, #0x08
+   007B CArBEr00            281 	jp	Z,00102$
+   007E 18 D6               282 	jr	00108$
+                            283 ;Move.c:31: case J_UP: // If Up is pressed:
+   0080                     284 00101$:
+                            285 ;Move.c:32: move_sprite(0,lxpos,lypos - 8); // Change left half position.
+   0080 79                  286 	ld	a,c
+   0081 C6 F8               287 	add	a,#0xf8
+   0083 F5                  288 	push	af
+   0084 33                  289 	inc	sp
+   0085 C5                  290 	push	bc
+   0086 33                  291 	inc	sp
+   0087 AF                  292 	xor	a, a
+   0088 F5                  293 	push	af
+   0089 33                  294 	inc	sp
+   008A CDr00r00            295 	call	_move_sprite
+   008D E8 03               296 	add	sp, #3
+                            297 ;Move.c:33: move_sprite(1,rxpos,lypos - 8); // Change right half position.
+   008F 21r40r00            298 	ld	hl,#_lypos
+   0092 7E                  299 	ld	a,(hl)
+   0093 C6 F8               300 	add	a,#0xf8
+   0095 47                  301 	ld	b,a
+   0096 21r44r00            302 	ld	hl,#_rxpos
+   0099 56                  303 	ld	d,(hl)
+   009A C5                  304 	push	bc
+   009B 33                  305 	inc	sp
+   009C D5                  306 	push	de
+   009D 33                  307 	inc	sp
+   009E 3E 01               308 	ld	a,#0x01
+   00A0 F5                  309 	push	af
+   00A1 33                  310 	inc	sp
+   00A2 CDr00r00            311 	call	_move_sprite
+   00A5 E8 03               312 	add	sp, #3
+                            313 ;Move.c:34: lypos -= 8; // Update global vertical position variable.
+   00A7 21r40r00            314 	ld	hl,#_lypos
+   00AA 7E                  315 	ld	a,(hl)
+   00AB C6 F8               316 	add	a,#0xf8
+   00AD 22                  317 	ld	(hl+),a
+   00AE 7E                  318 	ld	a,(hl)
+   00AF CE FF               319 	adc	a,#0xff
+   00B1 77                  320 	ld	(hl),a
+                            321 ;Move.c:35: delay(300); // Wait before checking on the joypad.
+   00B2 21 2C 01            322 	ld	hl,#0x012c
+   00B5 E5                  323 	push	hl
+   00B6 CDr00r00            324 	call	_delay
+   00B9 E8 02               325 	add	sp, #2
+                            326 ;Move.c:36: break;
+   00BB C3r56r00            327 	jp	00108$
+                            328 ;Move.c:38: case J_DOWN:
+   00BE                     329 00102$:
+                            330 ;Move.c:39: move_sprite(0,lxpos,lypos + 8); // Change left half position.
+   00BE 79                  331 	ld	a,c
+   00BF C6 08               332 	add	a, #0x08
+   00C1 57                  333 	ld	d,a
+   00C2 D5                  334 	push	de
+   00C3 33                  335 	inc	sp
+   00C4 C5                  336 	push	bc
+   00C5 33                  337 	inc	sp
+   00C6 AF                  338 	xor	a, a
+   00C7 F5                  339 	push	af
+   00C8 33                  340 	inc	sp
+   00C9 CDr00r00            341 	call	_move_sprite
+   00CC E8 03               342 	add	sp, #3
+                            343 ;Move.c:40: move_sprite(1,rxpos,lypos + 8); // Change right half position.
+   00CE 21r40r00            344 	ld	hl,#_lypos
+   00D1 7E                  345 	ld	a,(hl)
+   00D2 C6 08               346 	add	a, #0x08
+   00D4 47                  347 	ld	b,a
+   00D5 21r44r00            348 	ld	hl,#_rxpos
+   00D8 56                  349 	ld	d,(hl)
+   00D9 C5                  350 	push	bc
+   00DA 33                  351 	inc	sp
+   00DB D5                  352 	push	de
+   00DC 33                  353 	inc	sp
+   00DD 3E 01               354 	ld	a,#0x01
+   00DF F5                  355 	push	af
+   00E0 33                  356 	inc	sp
+   00E1 CDr00r00            357 	call	_move_sprite
+   00E4 E8 03               358 	add	sp, #3
+                            359 ;Move.c:41: lypos += 8; // Update global vertical position variable.
+   00E6 21r40r00            360 	ld	hl,#_lypos
+   00E9 7E                  361 	ld	a,(hl)
+   00EA C6 08               362 	add	a, #0x08
+   00EC 22                  363 	ld	(hl+),a
+   00ED 7E                  364 	ld	a,(hl)
+   00EE CE 00               365 	adc	a, #0x00
+   00F0 77                  366 	ld	(hl),a
+                            367 ;Move.c:42: delay(300); // Wait before checking on the joypad.
+   00F1 21 2C 01            368 	ld	hl,#0x012c
+   00F4 E5                  369 	push	hl
+   00F5 CDr00r00            370 	call	_delay
+   00F8 E8 02               371 	add	sp, #2
+                            372 ;Move.c:43: break;
+   00FA C3r56r00            373 	jp	00108$
+                            374 ;Move.c:45: case J_LEFT:
+   00FD                     375 00103$:
+                            376 ;Move.c:46: move_sprite(0,lxpos - 8,lypos); // Change left half position.
+   00FD 79                  377 	ld	a,c
+   00FE C6 F8               378 	add	a,#0xf8
+   0100 C5                  379 	push	bc
+   0101 33                  380 	inc	sp
+   0102 F5                  381 	push	af
+   0103 33                  382 	inc	sp
+   0104 AF                  383 	xor	a, a
+   0105 F5                  384 	push	af
+   0106 33                  385 	inc	sp
+   0107 CDr00r00            386 	call	_move_sprite
+   010A E8 03               387 	add	sp, #3
+                            388 ;Move.c:47: move_sprite(1,rxpos - 8,lypos); // Change right half position.
+   010C 21r40r00            389 	ld	hl,#_lypos
+   010F 46                  390 	ld	b,(hl)
+   0110 21r44r00            391 	ld	hl,#_rxpos
+   0113 7E                  392 	ld	a,(hl)
+   0114 C6 F8               393 	add	a,#0xf8
+   0116 C5                  394 	push	bc
+   0117 33                  395 	inc	sp
+   0118 F5                  396 	push	af
+   0119 33                  397 	inc	sp
+   011A 3E 01               398 	ld	a,#0x01
+   011C F5                  399 	push	af
+   011D 33                  400 	inc	sp
+   011E CDr00r00            401 	call	_move_sprite
+   0121 E8 03               402 	add	sp, #3
+                            403 ;Move.c:48: lxpos -= 8;  // Update global horizontal position variables.
+   0123 21r42r00            404 	ld	hl,#_lxpos
+   0126 7E                  405 	ld	a,(hl)
+   0127 C6 F8               406 	add	a,#0xf8
+   0129 22                  407 	ld	(hl+),a
+   012A 7E                  408 	ld	a,(hl)
+   012B CE FF               409 	adc	a,#0xff
+   012D 77                  410 	ld	(hl),a
+                            411 ;Move.c:49: rxpos -= 8;
+   012E 21r44r00            412 	ld	hl,#_rxpos
+   0131 7E                  413 	ld	a,(hl)
+   0132 C6 F8               414 	add	a,#0xf8
+   0134 22                  415 	ld	(hl+),a
+   0135 7E                  416 	ld	a,(hl)
+   0136 CE FF               417 	adc	a,#0xff
+   0138 77                  418 	ld	(hl),a
+                            419 ;Move.c:50: delay(300); // Wait before checking on the joypad.
+   0139 21 2C 01            420 	ld	hl,#0x012c
+   013C E5                  421 	push	hl
+   013D CDr00r00            422 	call	_delay
+   0140 E8 02               423 	add	sp, #2
+                            424 ;Move.c:51: break;
+   0142 C3r56r00            425 	jp	00108$
+                            426 ;Move.c:53: case J_RIGHT:
+   0145                     427 00104$:
+                            428 ;Move.c:54: move_sprite(0,lxpos + 8,lypos); // Change left half position.
+   0145 79                  429 	ld	a,c
+   0146 C6 08               430 	add	a, #0x08
+   0148 57                  431 	ld	d,a
+   0149 C5                  432 	push	bc
+   014A 33                  433 	inc	sp
+   014B D5                  434 	push	de
+   014C 33                  435 	inc	sp
+   014D AF                  436 	xor	a, a
+   014E F5                  437 	push	af
+   014F 33                  438 	inc	sp
+   0150 CDr00r00            439 	call	_move_sprite
+   0153 E8 03               440 	add	sp, #3
+                            441 ;Move.c:55: move_sprite(1,rxpos + 8,lypos); // Change right half position.
+   0155 21r40r00            442 	ld	hl,#_lypos
+   0158 46                  443 	ld	b,(hl)
+   0159 21r44r00            444 	ld	hl,#_rxpos
+   015C 7E                  445 	ld	a,(hl)
+   015D C6 08               446 	add	a, #0x08
+   015F 57                  447 	ld	d,a
+   0160 C5                  448 	push	bc
+   0161 33                  449 	inc	sp
+   0162 D5                  450 	push	de
+   0163 33                  451 	inc	sp
+   0164 3E 01               452 	ld	a,#0x01
+   0166 F5                  453 	push	af
+   0167 33                  454 	inc	sp
+   0168 CDr00r00            455 	call	_move_sprite
+   016B E8 03               456 	add	sp, #3
+                            457 ;Move.c:56: lxpos += 8; // Update global horizontal position variables.
+   016D 21r42r00            458 	ld	hl,#_lxpos
+   0170 7E                  459 	ld	a,(hl)
+   0171 C6 08               460 	add	a, #0x08
+   0173 22                  461 	ld	(hl+),a
+   0174 7E                  462 	ld	a,(hl)
+   0175 CE 00               463 	adc	a, #0x00
+   0177 77                  464 	ld	(hl),a
+                            465 ;Move.c:57: rxpos += 8;
+   0178 21r44r00            466 	ld	hl,#_rxpos
+   017B 7E                  467 	ld	a,(hl)
+   017C C6 08               468 	add	a, #0x08
+   017E 22                  469 	ld	(hl+),a
+   017F 7E                  470 	ld	a,(hl)
+   0180 CE 00               471 	adc	a, #0x00
+   0182 77                  472 	ld	(hl),a
+                            473 ;Move.c:58: delay(300); // Wait before checking on the joypad.
+   0183 21 2C 01            474 	ld	hl,#0x012c
+   0186 E5                  475 	push	hl
+   0187 CDr00r00            476 	call	_delay
+   018A E8 02               477 	add	sp, #2
+                            478 ;Move.c:59: break;
+   018C C3r56r00            479 	jp	00108$
+                            480 ;Move.c:63: }
+   018F C9                  481 	ret
+                            482 	.area _CODE
+                            483 	.area _CABS (ABS)
